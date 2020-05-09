@@ -52,9 +52,7 @@ class GameFragment : Fragment() {
                 container,
                 false)
 
-        binding.correctButton.setOnClickListener { viewModel.onCorrect() }
-
-        binding.skipButton.setOnClickListener { viewModel.onSkip() }
+        binding.gameViewModel = viewModel
 
         viewModel.score.observe(
             viewLifecycleOwner,
