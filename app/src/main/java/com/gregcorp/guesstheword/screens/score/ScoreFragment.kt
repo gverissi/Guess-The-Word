@@ -46,11 +46,8 @@ class ScoreFragment : Fragment() {
                 false
         )
 
-//        // Get args using by navArgs property delegate (doesn't work)
-//        val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
-
-        // Get args using by fromBundle
-        val scoreFragmentArgs = ScoreFragmentArgs.fromBundle(requireArguments())
+        // Get args using by navArgs property delegate
+        val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
 
         binding.scoreText.text = scoreFragmentArgs.score.toString()
         binding.playAgainButton.setOnClickListener { onPlayAgain() }
