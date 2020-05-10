@@ -16,11 +16,14 @@
 
 package com.gregcorp.guesstheword.screens.game
 
+import android.os.Build
 import android.os.Bundle
-import android.text.format.DateUtils
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -53,6 +56,7 @@ class GameFragment : Fragment() {
         binding.gameViewModel = viewModel
         binding.lifecycleOwner = this
 
+        // Sets up event listening to navigate the player when the game is finished
         viewModel.eventGameFinish.observe(
             viewLifecycleOwner,
             Observer { hasFinished ->
@@ -60,7 +64,19 @@ class GameFragment : Fragment() {
                     gameFinished()
                     viewModel.onGameFinishComplete()
                 }
-            })
+            }
+        )
+
+        // Buzzes when triggered with different buzz events
+        viewModel.eventBuzz.observe(
+            viewLifecycleOwner,
+            Observer { buzzType ->
+                if (buzzType != GameViewModel.BuzzType.NO_BUZZ) {
+                    buzz(buzzType.pattern)
+                    viewModel.onBuzzComplete()
+                }
+            }
+        )
 
         return binding.root
 
@@ -73,5 +89,19 @@ class GameFragment : Fragment() {
         val action = GameFragmentDirections.actionGameToScore(viewModel.score.value ?: 0)
         findNavController(this).navigate(action)
 //        Toast.makeText(this.activity, "Game has finished", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun buzz(pattern: LongArray) {
+        val buzzer = activity?.getSystemService<Vibrator>()
+
+        buzzer?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                buzzer.vibrate(VibrationEffect.createWaveform(pattern, -1))
+            }
+//            else {
+//                //deprecated in API 26
+//                buzzer.vibrate(pattern, -1)
+//            }
+        }
     }
 }
